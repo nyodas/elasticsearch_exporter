@@ -270,6 +270,18 @@ var (
 			help:   "Count of index segments on this node",
 			labels: []string{"cluster", "node"},
 		},
+		"indices_search_fetch_current": &VecInfo{
+			help:   "Number of query fetches currently running",
+			labels: []string{"cluster", "node"},
+		},
+		"indices_search_open_contexts": &VecInfo{
+			help:   "Number of active searches",
+			labels: []string{"cluster", "node"},
+		},
+		"indices_search_query_current": &VecInfo{
+			help:   "Number of currently active queries",
+			labels: []string{"cluster", "node"},
+		},
 		"process_cpu_percent": &VecInfo{
 			help:   "Percent CPU used by process",
 			labels: []string{"cluster", "node"},
@@ -527,6 +539,10 @@ func (e *Exporter) CollectNodesStats() {
 		e.gauges["jvm_memory_used_bytes"].WithLabelValues(allStats.ClusterName, stats.Host, "non-heap").Set(float64(stats.JVM.Mem.NonHeapUsed))
 
 		// Indices Stats
+		e.gauges["indices_search_query_current"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.Search.QueryCurrent))
+		e.gauges["indices_search_open_contexts"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.Search.OpenContext))
+		e.gauges["indices_search_fetch_current"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.Search.FetchCurrent))
+
 		e.gauges["indices_fielddata_memory_size_bytes"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.FieldData.MemorySize))
 		e.gauges["indices_fielddata_cache_size"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.FieldData.CacheSize))
 		e.counters["indices_fielddata_evictions"].WithLabelValues(allStats.ClusterName, stats.Host).Set(float64(stats.Indices.FieldData.Evictions))
